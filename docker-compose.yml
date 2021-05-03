@@ -1,0 +1,33 @@
+version: "3"
+services:
+  node-app:
+    build:
+      context: .
+      args:
+        NODE_ENV: development
+    ports:
+      - 3000:3000
+    environment:
+      - PORT=3000
+      - NODE_ENV=development
+      - MONGO_USER=root
+      - MONGO_PASSWORD=example
+    volumes:
+      - /app/node_modules # 这个文件容器它自己的
+      - ./:/app
+    command: npm run dev # 覆盖Dockerfile中的指令
+    depends_on: 
+      - mongo
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - mongo-db:/data/db
+
+# 让docker来管理volumes而不是手动指定一个目录, 尚不明确这么做的好处是什么.
+volumes:
+  mongo-db:
