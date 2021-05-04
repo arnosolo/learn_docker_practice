@@ -8,10 +8,8 @@ router
   .route("/signup")
   .post(userController.signUp);
 
-// router
-//   .route("/:id")
-//   .get(userController.getOnePost)
-//   .patch(userController.updatePost)
-//   .delete(userController.deletePost);
+router
+  .route("/login")
+  .post(userController.login);
 
 module.exports = router;
