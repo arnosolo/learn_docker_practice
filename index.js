@@ -1,21 +1,47 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { MONGO_IP, MONGO_PASSWORD, MONGO_PORT, MONGO_USER } = require('./config/config');
+const { MONGO_IP, MONGO_PASSWORD, MONGO_PORT, MONGO_USER, SESSION_SECRET, REDIS_URL, REDIS_PORT } = require('./config/config');
+const redis = require('redis')
+const session = require('express-session')
 const postRouter = require("./routes/postRoutes")
 const userRouter = require("./routes/userRoutes")
 
 const app = express();
+let RedisStore = require('connect-redis')(session)
+let redisClient = redis.createClient({
+  host: REDIS_URL,
+  port: REDIS_PORT
+})
 
 // Middleware
+app.use(
+  session({
+    store: new RedisStore({ client: redisClient }),
+    secret: SESSION_SECRET,
+    cookie: {
+      secure: false,
+      resave: false,
+      saveUninitialized: false,
+      httpOnly: true,
+      maxAge: 30000
+    }
+  })
+)
 app.use(express.json());
 
 // ****************************************************
 // Connect MongoDB
 const mongoUrl = `mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}/?authSource=admin`
-mongoose
-.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true })
-.then(() => console.log("succesfully connected to DB"))
-.catch(err => console.log(err));
+const connectWithRetry = () => {
+  mongoose
+    .connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log("succesfully connected to DB"))
+    .catch(err => {
+      console.log(err);
+      setTimeout(connectWithRetry, 5000);
+    });
+}
+connectWithRetry();
 
 
 // ****************************************************
