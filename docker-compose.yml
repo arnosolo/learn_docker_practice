@@ -3,8 +3,8 @@ services:
   nginx:
     image: nginx:stable-alpine
     ports:
-      - 80:80
-    volumes: 
+      - 2800:80
+    volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
 
   node-app:
