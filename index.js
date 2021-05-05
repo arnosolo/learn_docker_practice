@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const { MONGO_IP, MONGO_PASSWORD, MONGO_PORT, MONGO_USER, SESSION_SECRET, REDIS_URL, REDIS_PORT } = require('./config/config');
 const redis = require('redis')
 const session = require('express-session')
+const cors = require('cors')
 const postRouter = require("./routes/postRoutes")
 const userRouter = require("./routes/userRoutes")
 
@@ -14,6 +15,8 @@ let redisClient = redis.createClient({
 })
 
 // Middleware
+app.use(cors())
+app.enable("trust proxy")
 app.use(
   session({
     store: new RedisStore({ client: redisClient }),
@@ -46,8 +49,9 @@ connectWithRetry();
 
 // ****************************************************
 // Handle Request
-app.get("/", (req, res) => {
-  res.send("<h2>Hello docker, I am Arno. I have </h2>");
+app.get("/api/v1", (req, res) => {
+  res.send("<h2>Hello docker, I am Arno.</h2>");
+  console.log("get a request");
 });
 
 app.use("/api/v1/posts", postRouter);
