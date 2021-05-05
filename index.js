@@ -50,7 +50,7 @@ connectWithRetry();
 // ****************************************************
 // Handle Request
 app.get("/api/v1", (req, res) => {
-  res.send("<h2>Hello docker, I am Arno.</h2>");
+  res.send("<h2>Hello docker, I am Arno. Test change.</h2>");
   console.log("get a request");
 });
 
