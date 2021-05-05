@@ -1,8 +1,8 @@
 FROM node:15
+# FROM node:15-alpine
 WORKDIR /app
 COPY package.json .
 
-# RUN npm install -g nodemon
 # RUN npm install
 ARG NODE_ENV
 RUN if[ "${NODE_ENV}" = "development" ]; \
